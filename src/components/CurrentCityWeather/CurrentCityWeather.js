@@ -5,7 +5,9 @@ import Background from "../../data/BackGroundAccordingToWeather";
 import { Col, Row } from "react-bootstrap";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMicrophone, faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons'
+import { faMicrophone, faMicrophoneSlash, faCircle } from '@fortawesome/free-solid-svg-icons'
+import Toggle from 'react-toggle'
+import "react-toggle/style.css"
 
 const CurrentCityWeather = () => {
 
@@ -13,6 +15,7 @@ const CurrentCityWeather = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [city, setCity] = useState("New York City");
   const [results, setResults] = useState(null);
+  const [unit, setUnit] = useState('metric');
 
   const {
     transcript,
@@ -25,7 +28,7 @@ const CurrentCityWeather = () => {
     fetch(
       "https://api.openweathermap.org/data/2.5/weather?q=" +
       city +
-      "&units=metric" +
+      "&units=" + unit +
       "&appid=" +
       process.env.REACT_APP_APIKEY
     )
@@ -50,7 +53,7 @@ const CurrentCityWeather = () => {
       .catch((err) => {
         setError(err);
       });
-  }, [city]);
+  }, [city, unit]);
 
 
   useEffect(() => {
@@ -66,9 +69,27 @@ const CurrentCityWeather = () => {
     }
   }
 
+  function handleUnitChange() {
+    if (unit === 'metric') {
+      setUnit('imperial')
+    } else {
+      setUnit('metric')
+    }
+    console.log(unit)
+  }
+
 
   return (
     <>
+      <div className="toggle-ctn">
+        <Toggle
+          defaultChecked={true}
+          icons={{
+            checked: null,
+            unchecked: null,
+          }}
+          onChange={handleUnitChange} />
+      </div>
       <div className="CurrentCityWeather">
         <h2 className="pb-4">Enter a city below 👇</h2>
         <div className='input-ctn'>
@@ -80,12 +101,12 @@ const CurrentCityWeather = () => {
             defaultValue={city}
             className="inputCity"
           />
-          {browserSupportsSpeechRecognition && (
+          {browserSupportsSpeechRecognition ? (
             <div className='voice-ctn'>
               <div
                 className='microphone-icon'
                 onClick={handleMicrophone}>{listening ? (<FontAwesomeIcon icon={faMicrophone} />) : (<FontAwesomeIcon icon={faMicrophoneSlash} />)}</div>
-            </div>)}
+            </div>) : <div></div>}
         </div>
         {error && (
           <div className="WeatherResultsLoading">
@@ -107,7 +128,9 @@ const CurrentCityWeather = () => {
                 <Col className="col-md-5 col-12">
                   <div className="CurrentActualTemp">
                     {results.main.temp}
-                    <sup>°C</sup>
+                    {unit === "metric" ? (
+                      <sup>°C</sup>) : (<sup>°F</sup>)
+                    }
                   </div>
                   <div className="CurrentActualWeather">
                     {results.weather[0].main}
@@ -123,7 +146,8 @@ const CurrentCityWeather = () => {
                     <Col className="pb-1 pt-2">
                       <div className="currentTempDetails">
                         <span> Feels like: </span> {results.main.feels_like}
-                        <sup>°C</sup>
+                        {unit === "metric" ? (
+                          <sup>°C</sup>) : (<sup>°F</sup>)}
                       </div>
                     </Col>
                     <Col className="pb-2">
@@ -137,24 +161,26 @@ const CurrentCityWeather = () => {
                         <Col>
                           <div className="minmaxTempHeading">MIN</div>
                           <div className="minmaxTemp">
-                            {results.main.temp_min} <sup>°C</sup>
+                            {results.main.temp_min}   {unit === "metric" ? (
+                              <sup>°C</sup>) : (<sup>°F</sup>)}
                           </div>
                         </Col>
                         <Col>
                           <div className="minmaxTempHeading">MAX</div>
                           <div className="minmaxTemp">
-                            {results.main.temp_max} <sup>°C</sup>
+                            {results.main.temp_max}   {unit === "metric" ? (
+                              <sup>°C</sup>) : (<sup>°F</sup>)}
                           </div>
                         </Col>
                       </Row>
                     </Col>
                   </Row>
                 </Col>
-              </Row>
-            </div>
-          </div>
+              </Row >
+            </div >
+          </div >
         )}
-      </div>
+      </div >
     </>
   );
 

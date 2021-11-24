@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
+.toggle-ctn {
+  width: 40px;
+  height: 40px;
+  z-index: 1;
+  position: fixed;
+  top: 8%;
+  right: 8%;
+}
+
 .CurrentCityWeather {
   margin-top: 20px;
 }
